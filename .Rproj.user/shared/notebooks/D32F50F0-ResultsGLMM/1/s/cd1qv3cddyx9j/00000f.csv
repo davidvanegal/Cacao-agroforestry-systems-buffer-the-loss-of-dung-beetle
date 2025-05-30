@@ -1,0 +1,7 @@
+"0","# Read data"
+"0","GLMMDB <- read.csv(""GLM_DungBeetles.csv"", header = T, sep = "";"")"
+"0",""
+"0","# Convert factor -----"
+"0","GLMMDB$VegCover <- factor(GLMMDB$VegCover, levels = c(""Secondary forest"", "
+"0","                                                          ""Cacao agroforestry systems"","
+"0","                                                          ""Pasture""))"

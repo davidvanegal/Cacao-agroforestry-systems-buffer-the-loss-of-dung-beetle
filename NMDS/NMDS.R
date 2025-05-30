@@ -8,6 +8,7 @@ library(png) # Read and write PNG images CRAN v0.1-8
 library(patchwork) # The Composer of Plots CRAN v1.2.0 
 library(cowplot) # Streamlined Plot Theme and Plot Annotations for 'ggplot2' CRAN v1.1.3
 library(grid)
+library(ggrepel)
 
 ## Análisis bajo parámetros de abundancia
 
@@ -24,7 +25,7 @@ DB <- BU
 # Dung Beetles ----
 dimDB <- dim(DB)
 dimDB
-DB3 <- DB[,2:23]
+DB3 <- DB[,2:length(DB)]
 
 # ANOSIM ----
 # Fire regime
@@ -61,28 +62,38 @@ nmdsdataDB <- data.frame(nmds.scoresDB$sites)
 nmdsdataDB$sites <- c(1:12)
 nmdsdataDB$sites[1:4] <- c("Secondary forest")
 nmdsdataDB$sites[5:8] <- c("Pasture")
-nmdsdataDB$sites[9:12] <- c("Cacao agroforestry")
+nmdsdataDB$sites[9:12] <- c("Cacao agroforestry systems")
 
+nmdsdataDB$sites <- factor(nmdsdataDB$sites, 
+                           levels = c("Secondary forest", 
+                                      "Cacao agroforestry systems", 
+                                      "Pasture"))
 
 # Plot
-PlotDB <-ggplot(nmdsdataDB, aes(x = NMDS1, y = NMDS2, color = sites))+
-  geom_point(aes(shape = sites), size=4) +
-  geom_mark_ellipse(expand = 0, aes(color = sites))+
-  scale_color_manual(values=c("cyan3", "cyan4", "black"))+
-  annotate("text", x = -0.5, y = 0.7, label = "Strees: 0.0774")+
-  theme(axis.text.x = element_text(size = 14, colour = "black"))+
-  theme(axis.text.y = element_text(size = 14, colour = "black"))+
-  theme(axis.title.x = element_text(size = 14, colour = "black"))+
-  theme(axis.title.y = element_text(size = 14, colour = "black"))+
+ggplot(nmdsdataDB, aes(x = NMDS1, y = NMDS2))+
+  geom_point(aes(shape = sites, color = sites), size = 2.7) +
+  geom_mark_ellipse(expand = 0, aes(color = sites, fill = sites))+
+  scale_color_manual(values= c("darkolivegreen", "darkgoldenrod3","darkolivegreen2"))+
+  scale_fill_manual(values = c("darkolivegreen", "darkgoldenrod3","darkolivegreen2"))+
+  annotate("text", x = 1.4, y = 0.8, label = "Strees: 0.0774", size = 4)+
+  theme(axis.title.x = element_text(family = "serif", size = 16, face = "bold"))+
+  theme(axis.text.x = element_text(family = "serif", size = 12, face = "bold"))+
+  theme(axis.title.y = element_text(family = "serif", size = 16, face = "bold"))+
+  theme(axis.text.y = element_text(family = "serif", size = 12, face = "bold"))+
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-  theme(panel.background = element_blank(), legend.position = "none")+
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  theme(panel.background = element_blank())+
   labs(x = "NMDS1", y = "NMDS2",
        family = "Arial", size = 14)+
-  theme(legend.title=element_blank(), axis.title.x=element_blank(),
-        text=element_text(size=20), legend.key=element_blank())+
-  inset_element(p = imgDB, left = 1, 
-                bottom = 0.75, right = 0.9, top = 0.95)
+  theme(panel.background = element_blank(), 
+        legend.text = element_text(family = "sans", size = 12), 
+        legend.title = element_text(family = "sans", size = 12), 
+        legend.position = "top")+
+  labs(color = "Vegetation cover", shape = "Vegetation cover", 
+       fill = "Vegetation cover")
+
+ggsave("plotNMDS.png", width = 12, height = 7)
 
 stressplot(nmdsDB)
 
